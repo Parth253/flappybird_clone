@@ -1,12 +1,3 @@
---[[
-    PlayState Class
-    Author: Colton Ogden
-    cogden@cs50.harvard.edu
-
-    The PlayState class is the bulk of the game, where the player actually controls the bird and
-    avoids pipes. When the player collides with a pipe, we should go to the GameOver state, where
-    we then go back to the main menu.
-]]
 
 PlayState = Class{__includes = BaseState}
 
@@ -23,7 +14,7 @@ function PlayState:init()
     self.timer = 0
     self.score = 0
 
-    -- initialize our last recorded Y value for a gap placement to base other gaps off of
+   
     self.lastY = -PIPE_HEIGHT + math.random(80) + 20
 end
 
@@ -33,17 +24,15 @@ function PlayState:update(dt)
 
     -- spawn a new pipe pair every second and a half
     if self.timer > 2 then
-        -- modify the last Y coordinate we placed so pipe gaps aren't too far apart
-        -- no higher than 10 pixels below the top edge of the screen,
-        -- and no lower than a gap length (90 pixels) from the bottom
+       
         local y = math.max(-PIPE_HEIGHT + 10, 
             math.min(self.lastY + math.random(-20, 20), VIRTUAL_HEIGHT - 90 - PIPE_HEIGHT))
         self.lastY = y
 
-        -- add a new pipe pair at the end of the screen at our new Y
+       
         table.insert(self.pipePairs, PipePair(y))
 
-        -- reset timer
+      
         self.timer = 0
     end
 
@@ -63,17 +52,13 @@ function PlayState:update(dt)
         pair:update(dt)
     end
 
-    -- we need this second loop, rather than deleting in the previous loop, because
-    -- modifying the table in-place without explicit keys will result in skipping the
-    -- next pipe, since all implicit keys (numerical indices) are automatically shifted
-    -- down after a table removal
     for k, pair in pairs(self.pipePairs) do
         if pair.remove then
             table.remove(self.pipePairs, k)
         end
     end
 
-    -- simple collision between bird and all pipes in pairs
+   
     for k, pair in pairs(self.pipePairs) do
         for l, pipe in pairs(pair.pipes) do
             if self.bird:collides(pipe) then
@@ -87,7 +72,7 @@ function PlayState:update(dt)
         end
     end
 
-    -- update bird based on gravity and input
+   
     self.bird:update(dt)
 
     -- reset if we get to the ground
@@ -112,17 +97,12 @@ function PlayState:render()
     self.bird:render()
 end
 
---[[
-    Called when this state is transitioned to from another state.
-]]
+
 function PlayState:enter()
-    -- if we're coming from death, restart scrolling
+   
     scrolling = true
 end
 
---[[
-    Called when this state changes to another state.
-]]
 function PlayState:exit()
     -- stop scrolling for the death/score screen
     scrolling = false
